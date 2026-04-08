@@ -1,0 +1,157 @@
+import java.util.Arrays;
+public class Sudoku
+{
+    public static void main(String[] args)
+    {
+        long startTime = System.currentTimeMillis();
+        int[][] puzzle = new int[9][9];
+        fill(puzzle);
+        doubleCheck(puzzle);
+        display(puzzle);
+        long endTime = System.currentTimeMillis();
+        System.out.println();
+        System.out.println();
+        System.out.println("It took " + (endTime - startTime) + " milliseconds to run this.");
+    }
+    
+    public static void display (int[][] d) {
+        for (int a = 0; a < d.length; a++) {
+            if (a % 3 == 0) {
+                System.out.print(" ");
+                for (int c = 0; c < d[0].length * 3 - 4; c++)
+                    System.out.print("_");
+                System.out.println();
+                System.out.println();
+                }
+            for (int b = 0; b < d[0].length; b++) {
+                if (b % 3 == 0) {
+                    System.out.print("| ");
+                }
+                System.out.print(d[a][b] + " ");
+            }
+            System.out.print("|");
+            System.out.println();
+        }
+        System.out.print(" ");
+        for (int c = 0; c < d[0].length * 3 - 4; c++)
+        System.out.print("_");
+    }
+    
+    public static void fill (int[][] a) {
+        int choice = 0;
+        int rerun = 0;
+        for (int i = 1; i < 10; i++) {
+            for (int j = 0; j < a.length; j++) {
+             choice = (int)(Math.random()*9);
+            while (checkColumn(a, choice, i) || checkRow(a, j, i) || checkBox(a, choice, j, i) || a[j][choice] != 0) {
+                 choice = (int)(Math.random()*9);
+                 rerun++;
+            if (rerun > 1000) {
+                    break;
+                }
+            }
+            rerun = 0;
+            a[j][choice] = i;
+            }
+        }
+    }
+    
+    public static boolean checkColumn(int[][] a, int b, int c) {
+        for (int i = 0; i < a.length; i++) {
+            if (a[i][b] == c) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean checkRow (int[][] a, int b, int c) {
+        for (int i = 0; i < a[0].length; i++) {
+            if (a[b][i] == c) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean checkBox (int[][] a, int b, int c, int d) {
+        int placex = 0;
+        int placey = 0;
+        if (b < 3) {
+            placex = 0;
+        }
+        else if (b < 6) {
+            placex = 3;
+        }
+        else if (b < 9) {
+            placex = 6;
+        }
+        if (c < 3) {
+            placey = 0;
+        }
+        else if (c < 6) {
+            placey = 3;
+        }
+        else if (c < 9) {
+            placey = 6;
+        }
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (a[placey + i][placex + j] == d) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static boolean doubleCheck (int[][] a) {
+        if (isValid(a) && noZero(a)) {
+        return true;
+        }
+        
+        clear(a);
+        fill(a);
+        return doubleCheck(a);
+    }
+    
+    public static void clear (int[][] a) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[0].length; j++) {
+                a[i][j] = 0;
+            }
+        }
+    }
+    
+    public static boolean isValid(int[][] a){
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                int temp = a[i][j];
+                if (temp == 0) continue;
+                a[i][j] = 0;
+                
+                if (checkRow(a, i, temp) ||
+                checkColumn(a, j, temp) ||
+                checkBox(a, j, i, temp)) {
+                a[i][j] = temp;
+                return false;
+                }
+                
+            a[i][j] = temp;
+            }
+        }
+        
+        return true;
+    }
+    
+    public static boolean noZero(int[][] a) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[0].length; j++) {
+                if (a[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
